@@ -1,0 +1,10 @@
+config = {
+    'wifi-ssid': '',
+    'wifi-password': '',
+    'mqtt-host': '',
+    'mqtt-topic': '',
+    'mqtt-client-id': '',
+    'pin-pitch': 0,
+    'pin-yaw': 0,
+    'pin-out': 0
+}
