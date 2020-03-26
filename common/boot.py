@@ -1,7 +1,15 @@
 import network
 import time
+import upip
 
 from config import config
+
+PACKAGES = ['micropython-logging']
+
+
+def setup_logging():
+    import logging
+    logging.basicConfig(level=logging.INFO)
 
 
 def wifi_connect():
@@ -11,8 +19,12 @@ def wifi_connect():
     station.connect(config['wifi-ssid'], config['wifi-password'])
 
     while not station.isconnected():
-        print('connecting...')
         time.sleep(0.1)
 
 
 wifi_connect()
+
+for package in PACKAGES:
+    upip.install(package)
+
+setup_logging()
