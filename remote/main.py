@@ -101,15 +101,22 @@ class Remote:
         message = json.dumps(message_dict)
         self.client.publish(self.topic, message)
 
-    def run(self):
+    def initialize(self):
+        self.publish({'pitch': 0, 'yaw': 0, 'out': 1})
+
+    def control_loop(self):
+        self.initialize()
+
         while True:
-            self.publish({'pitch': self._pitch, 'yaw': self._yaw, 'out': self._out})
-            time.sleep(1 / self.freq)
             yaw_delta, pitch_delta = self.joystick.get_deltas()
             self._yaw += yaw_delta
             self._pitch += pitch_delta
             self._out = self.joystick.read_button()
+            time.sleep(1 / self.freq)
+            self.publish({'pitch': self._pitch, 'yaw': self._yaw, 'out': self._out})
 
 
 if __name__ == '__main__':
     joystick = JoyStick(config['pin-read-x-axis'], config['pin-read-y-axis'], config['pin-button'])
+    remote = Remote(joystick, config['mqtt-client-id'], config['mqtt-host'], config['mqtt-topic'])
+    remote.control_loop()
