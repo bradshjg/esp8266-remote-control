@@ -21,7 +21,7 @@ class JoyStick:
         750: 2 * sensitivity,
         900: 3 * sensitivity
     }
-    threshold_list = list(thresholds.keys())
+    thresholds_list = sorted(list(thresholds.keys()))
 
     def __init__(self, x_axis_pin, y_axis_pin, button_pin):
         self.x_axis_read = Pin(x_axis_pin, Pin.OUT)
@@ -36,8 +36,11 @@ class JoyStick:
         else:
             x_value, y_value = values
 
-        x_delta = self.thresholds[self.bin_search_range(x_value, self.threshold_list)]
-        y_delta = self.thresholds[self.bin_search_range(y_value, self.threshold_list)]
+        x_threshold = self.bin_search_range(x_value, self.thresholds_list)
+        y_threshold = self.bin_search_range(y_value, self.thresholds_list)
+
+        x_delta = self.thresholds[x_threshold]
+        y_delta = self.thresholds[y_threshold]
 
         return x_delta, y_delta
 
@@ -52,7 +55,7 @@ class JoyStick:
         elif value < midpont_value:
             return self.bin_search_range(value, thresholds_list[:midpoint])
         else:
-            return self.thresholds[midpoint]
+            return thresholds_list[midpoint]
 
     def read_axes(self):
         self.x_axis_read.value(1)
@@ -68,18 +71,10 @@ class JoyStick:
     def read_button(self):
         return self.button_pin.value()
 
-    def log(self):
-        axis_values = self.read_axes()
-        button_value = self.read_button()
-        deltas = self.get_deltas(axis_values)
-
-        logger.info(axis_values)
-        logger.info(button_value)
-        logger.info(deltas)
-
 
 class Remote:
-    freq = 10
+    freq = 5
+    bounds = (-45, 45)
 
     def __init__(self, joystick, client_id, mqtt_host, mqtt_topic):
         self.joystick = joystick
@@ -109,11 +104,19 @@ class Remote:
 
         while True:
             yaw_delta, pitch_delta = self.joystick.get_deltas()
-            self._yaw += yaw_delta
-            self._pitch += pitch_delta
+
+            new_yaw = self._yaw + yaw_delta
+            if self.bounds[0] <= new_yaw <= self.bounds[1]:
+                self._yaw = new_yaw
+
+            new_pitch = self._pitch + pitch_delta
+            if self.bounds[0] <= new_pitch <= self.bounds[1]:
+                self._pitch = new_pitch
             self._out = self.joystick.read_button()
+            msg = {'pitch': self._pitch, 'yaw': self._yaw, 'out': self._out}
+            logger.info(msg)
+            self.publish(msg)
             time.sleep(1 / self.freq)
-            self.publish({'pitch': self._pitch, 'yaw': self._yaw, 'out': self._out})
 
 
 if __name__ == '__main__':
