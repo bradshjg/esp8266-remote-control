@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Control</title>
+</head>
+<body>
+  <h2>{{ request.user.username }}</h2>
+  {% csrf_token %}
+  <canvas id="canvas" style="width: 75%; height: 75%; padding: 0; margin: auto; display: block; background-color: mediumaquamarine"></canvas>
+</body>
+<script type="application/javascript">
+    canvas = document.getElementById('canvas');
+    csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    console.log(csrftoken);
+    canvas.addEventListener('pointerdown', (event) => {
+        let yaw = Math.round(event.offsetX / canvas.offsetWidth * 90) - 45;
+        let pitch = Math.round(event.offsetY / canvas.offsetHeight * 90) - 45;
+        fetch(
+            'http://localhost:8000/api/position/',
+            {
+                'method': 'POST',
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                'body': JSON.stringify({'yaw': yaw, 'pitch': pitch})
+            }
+        ).then((data) => {console.log(data)})
+    });
+</script>
+</html>
