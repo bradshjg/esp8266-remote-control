@@ -12,16 +12,12 @@ endif::[]
 
 = esp8266 Remote Control
 
+2-axis control with support for additional output GPIO pin. MQTT as transport, with code for additional HTTP API.
+
+image:https://travis-ci.com/bradshjg/esp8266-remote-control.svg?branch=master["Build Status", link="https://travis-ci.com/bradshjg/esp8266-remote-control"]
+
 toc::[]
 
 == Development
 
-=== Flashing the esp8266
-
-TODO
-
-=== Local MQTT Client
-
-`make local`
-
-TODO
+See available commands with `make`.
