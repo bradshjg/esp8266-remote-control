@@ -7,17 +7,36 @@ from ..device_controller import Controller
 from ..models import Action, Recording
 
 
-class RecordingSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Recording
-        fields = ['name']
-        depth = 2
+        model = get_user_model()
+        fields = ['username']
 
 
 class ActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Action
-        fields = ['payload', 'timestamp']
+        fields = ['payload', 'timestamp', 'recording']
+
+
+class RecordingSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    actions = ActionSerializer(many=True, required=False)
+
+    class Meta:
+        model = Recording
+        fields = ['id', 'name', 'user', 'actions']
+        depth = 1
+
+    def save(self, user):
+        Recording.objects.create(user=user, **self.validated_data)
+
+    def update(self, instance, validated_data):
+        action_data = validated_data.pop('actions')
+        for action in action_data:
+            action = Action.objects.create(**action, recording=instance)
+            instance.actions.add(action)
+        return instance
 
 
 class ActionBaseSerializer(serializers.Serializer):

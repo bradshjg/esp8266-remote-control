@@ -4,13 +4,19 @@ from rest_framework.response import Response
 from .serializers import OutputSerializer, PositionSerializer, RecordingSerializer
 
 
-class RecordingViewSet(viewsets.ReadOnlyModelViewSet):
+class RecordingViewSet(viewsets.ModelViewSet):
     serializer_class = RecordingSerializer
 
     def get_queryset(self):
-        if self.request.user.is_super_user:
+        if self.request.user.is_superuser:
             return self.serializer_class.Meta.model.objects.all()
         return self.request.user.recordings.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        pass
 
 
 class ActionBaseViewSet(viewsets.ViewSet):

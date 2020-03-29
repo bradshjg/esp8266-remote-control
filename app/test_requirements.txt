@@ -1,0 +1,4 @@
+-rrequirements.txt
+pytest
+pytest-django
+pytest-mock

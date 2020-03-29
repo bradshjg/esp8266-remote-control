@@ -16,8 +16,13 @@ class RecordingQuerySet(models.QuerySet):
 
 class Recording(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='recordings')
-    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='recordings',
+        editable=False
+    )
+    timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
     objects = RecordingQuerySet.as_manager()
 
@@ -33,6 +38,6 @@ class ActionQuerySet(models.QuerySet):
 class Action(models.Model):
     recording = models.ForeignKey(Recording, on_delete=models.CASCADE, related_name='actions')
     payload = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
     objects = ActionQuerySet.as_manager()
