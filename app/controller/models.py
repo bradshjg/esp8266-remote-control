@@ -1,3 +1,5 @@
+import time
+
 from django.conf import settings
 from django.db import models
 
@@ -7,6 +9,9 @@ from .device_controller import Controller
 class RecordingQuerySet(models.QuerySet):
     def recent(self, limit=5):
         return self.order_by('-timestamp')[:limit]
+
+    def replay(self, freq=5):
+        return self.actions.all().replay(freq)
 
 
 class Recording(models.Model):
@@ -18,9 +23,10 @@ class Recording(models.Model):
 
 
 class ActionQuerySet(models.QuerySet):
-    def replay(self):
+    def replay(self, freq):
         for action in self.order_by('-timestamp'):
             Controller.send(action.payload)
+            time.sleep(1 / freq)
         return self
 
 
