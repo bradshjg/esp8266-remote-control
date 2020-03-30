@@ -25,7 +25,7 @@ SECRET_KEY = 'v9#fo#-jhamip*aw$qgou(-g!_a2&vx08gwk!ro+ygbx_o@kf_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['jimmysucks.ddns.net']
 
 
 # Application definition
