@@ -134,5 +134,6 @@ REST_FRAMEWORK = {
     ]
 }
 
+API_HOSTPORT = 'jimmysucks.ddns.net'
 MQTT_HOST = '192.168.0.108'
 MQTT_TOPIC = 'control'

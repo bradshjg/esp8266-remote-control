@@ -19,7 +19,7 @@
         let yaw = Math.round(event.offsetX / canvas.offsetWidth * 90) - 45;
         let pitch = Math.round(event.offsetY / canvas.offsetHeight * 90) - 45;
         fetch(
-            'http://localhost:8000/api/position/',
+            'http://{{ api_hostport }}/api/position/',
             {
                 'method': 'POST',
                 'headers': {
