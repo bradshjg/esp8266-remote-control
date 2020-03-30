@@ -1,4 +1,5 @@
 PORT := /dev/cu.SLAB_USBtoUART
+RPI_IP := 192.168.0.108
 
 .PHONY: help
 help:
@@ -19,6 +20,10 @@ sync-remote: ## Sync remote code to microcontroller
 	ampy --port $(PORT) put remote/config.py
 	ampy --port $(PORT) put common/boot.py
 	ampy --port $(PORT) put remote/main.py
+
+.PHONY: deploy-app
+deploy-app: ## Deploy application to rpi
+	ssh pi@$(RPI_IP) 'sudo -u laser-remote bash -c "cd /home/laser-remote/app && git pull && source venv/bin/activate && pip install -r deploy_requirements.txt && python manage.py collectstatic --no-input" && sudo systemctl reload laser-remote'
 
 .PHONY: local-remote
 local-remote: ## Local environment with mosquitto client
