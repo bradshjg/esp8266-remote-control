@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Action
-        fields = ['payload', 'timestamp', 'recording']
+        fields = ['payload']
 
 
 class RecordingSerializer(serializers.ModelSerializer):
@@ -29,14 +29,14 @@ class RecordingSerializer(serializers.ModelSerializer):
         depth = 1
 
     def save(self, user):
-        Recording.objects.create(user=user, **self.validated_data)
+        return super().save(user=user, **self.validated_data)
 
     def update(self, instance, validated_data):
-        action_data = validated_data.pop('actions')
+        action_data = validated_data.pop('actions', [])
         for action in action_data:
             action = Action.objects.create(**action, recording=instance)
             instance.actions.add(action)
-        return instance
+        return super().update(instance, validated_data)
 
 
 class ActionBaseSerializer(serializers.Serializer):

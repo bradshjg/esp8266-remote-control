@@ -37,15 +37,6 @@ def test_recording_serialization_include_actions(recording):
 
 
 @pytest.mark.django_db
-def test_action_serializer_save(recording):
-    serializer = ActionSerializer(data={'payload': 'foo', 'recording': recording.id})
-    assert serializer.is_valid()
-    serializer.save()
-
-    assert recording.actions.count() == 2
-
-
-@pytest.mark.django_db
 def test_recording_serialization_add_action(recording):
     serialized = RecordingSerializer(instance=recording, data={'actions': [{'payload': 'baz'}]}, partial=True)
     assert serialized.is_valid()

@@ -15,8 +15,8 @@ class RecordingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def partial_update(self, request, *args, **kwargs):
-        pass
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ActionBaseViewSet(viewsets.ViewSet):
